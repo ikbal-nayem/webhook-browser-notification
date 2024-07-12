@@ -1,0 +1,19 @@
+<html>
+<head>
+	<link rel="icon" href="https://gems.gov.bd/media/logos/bd-govt-bn.png">
+    <script
+		type="text/javascript" 
+		src="/static/register-service-worker.js">
+	</script>
+</head>
+<body>
+	<h1>GEMS Production Deployment Status</h1>
+	<script type="text/javascript">
+		registerServiceWorker(
+			"/static/service-worker.js",
+			"{{config['VAPID_PUBLIC_KEY']}}",
+			"/service-worker/subscriptions"
+		);
+	</script>
+</body>
+</html>
