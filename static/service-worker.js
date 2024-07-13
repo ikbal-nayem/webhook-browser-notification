@@ -11,7 +11,6 @@ self.addEventListener("activate", function (event) {
 });
 
 self.addEventListener("push", function (event) {
-  console.log("[Service Worker] Push Received.");
   const pushData = event.data.text();
   console.log(`[Service Worker] Push received this data - "${pushData}"`);
   let data, title, body;
@@ -20,11 +19,14 @@ self.addEventListener("push", function (event) {
     title = data.title;
     body = data.body;
   } catch (e) {
-    title = "Untitledtion";
+    title = "GEMS Developers";
     body = pushData;
   }
   const options = {
     body: body,
+    tag: data?.tag || "gems-developers",
+    icon: "https://gems.gov.bd/media/logos/default-large.png",
+    vibrate: [200, 100, 200],
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });

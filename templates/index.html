@@ -8,12 +8,18 @@
 </head>
 <body>
 	<h1>GEMS Production Deployment Status</h1>
+	<button id="registerButton">Register</button>
+
 	<script type="text/javascript">
-		registerServiceWorker(
-			"/static/service-worker.js",
-			"{{config['VAPID_PUBLIC_KEY']}}",
-			"/service-worker/subscriptions"
-		);
+		const registerButton = document.getElementById("registerButton");
+		registerButton.addEventListener("click", () => {
+			registerServiceWorker(
+				"/static/service-worker.js",
+				"{{config['VAPID_PUBLIC_KEY']}}",
+				"/service-worker/subscription",
+				"Srabon"
+			);
+		});
 	</script>
 </body>
 </html>
