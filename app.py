@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, jsonify
-from db import addUserSubscriptionDevice
+from db import addUserSubscriptionDevice, getAllSubscribers, addService
+from pushNotificationHandler import sendBulkNotification
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -15,7 +16,8 @@ def home():
 @app.route("/service-worker/subscription", methods=["POST"])
 def create_push_subscription():
     json_data = request.get_json()
-    status = addUserSubscriptionDevice(json_data['user'], json_data['subscription_json'])
+    status = addUserSubscriptionDevice(
+        json_data['user'], json_data['subscription_json'])
     return jsonify(status)
 
 
@@ -23,6 +25,9 @@ def create_push_subscription():
 def receive_webhook():
     data = request.get_json()
     print(f"Received webhook data: {data}")
+    addService(data['service'])
+    sendBulkNotification(getAllSubscribers(), {
+                         'title': f"{data['service']} ({data['env']})", 'body': data['status']})
     return "Webhook received successfully!", 200
 
 

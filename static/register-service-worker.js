@@ -55,6 +55,14 @@ function subscribeUser(swRegistration, applicationServerPublicKey, apiEndpoint, 
 }
 
 function registerServiceWorker(serviceWorkerUrl, applicationServerPublicKey, apiEndpoint, user) {
+	if (!('Notification' in window) || Notification.permission === 'denied') {
+		Notification.requestPermission().then(function (permission) {
+			if (permission === 'granted') {
+				console.log('Notification permission granted.');
+			}
+		})
+	}
+	
 	let swRegistration = null;
 	if ('serviceWorker' in navigator && 'PushManager' in window) {
 		console.log('Service Worker and Push is supported');

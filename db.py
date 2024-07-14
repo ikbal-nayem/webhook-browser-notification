@@ -17,21 +17,19 @@ def getUserSubscriptionDevices(user) -> list | None:
 
 
 def addUserSubscriptionDevice(user, subscription_str):
-    subscription_json = json.loads(subscription_str) if type(subscription_str) is str else subscription_str
+    subscription_json = json.loads(subscription_str) if type(
+        subscription_str) is str else subscription_str
     ud = getUserSubscriptionDevices(user)
     if ud and len(ud) > 0:
         for d in ud:
             if d['endpoint'] == subscription_json['endpoint']:
-                sendSingleNotification(subscription_json, {'title': 'Already Subscribed', 'body': 'You Are Already Subscribed to the Service'})
+                sendSingleNotification(subscription_json, {
+                    'title': 'Already Subscribed', 'body': 'You Are Already Subscribed to the Service', 'tag': 'add-subscriber'})
                 return {'status': 'success', 'message': 'Already Subscribed'}
     users.document(user).collection('devices').add({**subscription_json})
-    sendSingleNotification(subscription_json, {'title':'Successfully Saved', 'body': 'You Have Successfully Subscribed to the Service'})
+    sendSingleNotification(subscription_json, {
+        'title': 'Successfully Saved', 'body': 'You Have Successfully Subscribed to the Service', 'tag': 'add-subscriber'})
     return {'status': 'success', 'message': 'Successfully Saved'}
-
-
-# def deleteSubscription(doc):
-#     users.document(doc).delete()
-#     return 'Successfully Delete'
 
 
 def getAllSubscribers():
@@ -42,6 +40,14 @@ def getAllSubscribers():
     return s_list
 
 
-# if __name__ == "__main__":
-#     s = getAllSubscribers()
-#     print(s)
+def addService(service):
+    return services.document(service).set({
+        'stage': [],
+        'training': [],
+        'production': [],
+    }, merge=True)
+
+
+if __name__ == "__main__":
+    s = addService('web-ems')
+    print(s)
