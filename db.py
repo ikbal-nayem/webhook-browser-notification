@@ -47,7 +47,10 @@ def addService(service):
         'production': [],
     }, merge=True)
 
+def getServiceList():
+    return [s.id for s in services.list_documents()]
 
-if __name__ == "__main__":
-    s = addService('web-ems')
-    print(s)
+
+# if __name__ == "__main__":
+#     s = getServiceList()
+#     print(s)

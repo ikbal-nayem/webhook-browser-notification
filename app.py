@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, jsonify
-from db import addUserSubscriptionDevice, getAllSubscribers, addService
+from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList
 from pushNotificationHandler import sendBulkNotification
 
 app = Flask(__name__, instance_relative_config=True)
@@ -10,7 +10,8 @@ app.app_context().push()
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    services = getServiceList()
+    return render_template("index.html", services=services)
 
 
 @app.route("/service-worker/subscription", methods=["POST"])

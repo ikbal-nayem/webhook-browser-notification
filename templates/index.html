@@ -19,52 +19,54 @@
 			</div>
 
 			<div id="service-block" class="row">
-				<div class="col-md-4">
-					<div class="card">
-						<div class="card-header">
-							<h5 class="card-title text-success">Stage</h5>
+				<form>
+					<div class="col-md-4">
+						<div class="card">
+							<div class="card-header">
+								<h5 class="card-title text-success">Stage</h5>
+							</div>
+							<div class="card-body">
+								{% for s in services %}
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="stage_{{s}}" />
+									<label class="form-check-label" for="stage_{{s}}"> {{s}} </label>
+								</div>
+								{% endfor %}
+							</div>
 						</div>
-						<div class="card-body">
-							<p class="card-text">
-								<span id="stage-status">Loading...</span>
-							</p>
-							<p class="card-text">
-								<span id="stage-last-updated">Last Updated: Loading...</span>
-							</p>
+					</div>
+					<div class="col-md-4">
+						<div class="card">
+							<div class="card-header">
+								<h5 class="card-title text-success">Training</h5>
+							</div>
+							<div class="card-body">
+								{% for s in services %}
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="training_{{s}}" />
+									<label class="form-check-label" for="training_{{s}}"> {{s}} </label>
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="card">
+							<div class="card-header">
+								<h5 class="card-title text-success">Production</h5>
+							</div>
+							<div class="card-body">
+								{% for s in services %}
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="prod_{{s}}" />
+									<label class="form-check-label" for="prod_{{s}}"> {{s}} </label>
+								</div>
+								{% endfor %}
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-md-4">
-					<div class="card">
-						<div class="card-header">
-							<h5 class="card-title text-success">Training</h5>
-						</div>
-						<div class="card-body">
-							<p class="card-text">
-								<span id="training-status">Loading...</span>
-							</p>
-							<p class="card-text">
-								<span id="training-last-updated">Last Updated: Loading...</span>
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4">
-					<div class="card">
-						<div class="card-header">
-							<h5 class="card-title text-success">Production</h5>
-						</div>
-						<div class="card-body">
-							<p class="card-text">
-								<span id="production-status">Loading...</span>
-							</p>
-							<p class="card-text">
-								<span id="production-last-updated">Last Updated: Loading...</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
+				</form>
 		</div>
 
 		<script type="text/javascript">
