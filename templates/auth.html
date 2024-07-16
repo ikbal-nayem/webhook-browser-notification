@@ -1,0 +1,100 @@
+{% extends "base.html" %} {% block header_script %}
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="border rounded-4">
+	<div class="text-center p-4">
+		<div id="sign-in-form" style="display: none">
+			<h2 class="mb-5">Sign In</h2>
+			<div class="mb-3">
+				<input type="email" class="form-control" id="sign-in-email" placeholder="Email" />
+			</div>
+			<div class="mb-3">
+				<input type="password" class="form-control" id="sign-in-password" placeholder="Password" />
+			</div>
+			<button class="btn btn-primary w-100" onclick="signIn()">Sign In</button>
+			<div class="mt-3">
+				<button class="btn btn-secondary w-100" onclick="toggleForms(true)">Go to Sign Up</button>
+			</div>
+			<div class="mt-3">
+				<div
+					id="g_id_onload"
+					data-client_id="YOUR_GOOGLE_CLIENT_ID"
+					data-callback="handleCredentialResponse"
+				></div>
+				<div class="g_id_signin" data-type="standard"></div>
+			</div>
+		</div>
+		<div id="sign-up-form">
+			<h2 class="mb-5">Sign Up</h2>
+			<div class="mb-3">
+				<input type="email" class="form-control" id="sign-up-email" placeholder="Email" />
+			</div>
+			<div class="mb-3">
+				<input type="password" class="form-control" id="sign-up-password" placeholder="Password" />
+			</div>
+			<button class="btn btn-primary w-100" onclick="signUp()">Sign Up</button>
+			<div class="mt-3">
+				<button class="btn btn-secondary w-100" onclick="toggleForms(false)">Go to Sign In</button>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+	// Default to showing sign-in form
+	toggleForms(false);
+</script>
+<style>
+	.container {
+		max-width: 500px;
+		margin-top: 50px;
+	}
+</style>
+<script>
+	function toggleForms(showSignUp) {
+		document.getElementById('sign-up-form').style.display = showSignUp ? 'block' : 'none';
+		document.getElementById('sign-in-form').style.display = showSignUp ? 'none' : 'block';
+	}
+
+	async function signUp() {
+		const email = document.getElementById('sign-up-email').value;
+		const password = document.getElementById('sign-up-password').value;
+
+		const response = await fetch('/sign-up', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ email, password }),
+		});
+
+		const data = await response.json();
+		alert(data.message || data.error);
+	}
+
+	async function signIn() {
+		const email = document.getElementById('sign-in-email').value;
+		const password = document.getElementById('sign-in-password').value;
+
+		const response = await fetch('/sign-in', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ email, password }),
+		});
+
+		const data = await response.json();
+		alert(data.message || data.error);
+	}
+
+	function handleCredentialResponse(response) {
+		// Handle the credential response for Google Sign-In
+		console.log('Encoded JWT ID token: ' + response.credential);
+	}
+</script>
+{% endblock %}
