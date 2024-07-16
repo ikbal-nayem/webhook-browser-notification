@@ -1,4 +1,5 @@
 from functools import wraps
+from firebase_admin import auth
 from flask import redirect, url_for, request, jsonify
 
 
@@ -10,7 +11,7 @@ def authenticate(func):
         if not session_cookie:
             # Redirect to the login route if no session cookie is found
             # (This is for HTML-based applications)
-            return redirect(url_for('login'))
+            return redirect(url_for('authentication'))
 
         try:
             # Verify the session cookie

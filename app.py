@@ -1,20 +1,20 @@
-from flask import Flask, request, render_template, jsonify
-from firebase_admin import auth
+import re
+from flask import Flask, request, render_template, jsonify, redirect
 import datetime
 from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList
+from firebase_admin import auth
 from pushNotificationHandler import sendBulkNotification
 from utils import authenticate
 
 app = Flask(__name__, instance_relative_config=True)
-
 app.config.from_pyfile('application.cfg.py')
 app.app_context().push()
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/auth', methods=['GET', 'POST'])
+def authentication():
     if request.method == 'GET':
-        return render_template('auth.html', title='Authentication')
+        return render_template('auth.html', title='Authentication', cid=app.config['VAPID_GOOGLE_CLIENT_ID'])
 
     id_token = request.get_json().get('idToken')
     if not id_token:
@@ -33,10 +33,43 @@ def login():
         response = jsonify({'status': 'success'})
         response.set_cookie('session', session_cookie,
                             httponly=True, secure=True)
-        return redirect(url_for('/'))
+        return redirect('/')
 
     except ValueError as e:
         return jsonify({'error': str(e)}), 401
+
+
+@app.route('/sign-up', methods=['POST'])
+def sign_up():
+    email = request.get_json().get('email')
+    password = request.get_json().get('password')
+
+    if not email or not password:
+        return jsonify({'error': 'Missing email or password'}), 400
+    try:
+        user = auth.create_user(email=email, password=password, disabled=True)
+        return jsonify({'message': 'User created successfully. You will be able to login after verification process.', 'uid': user.uid}), 201
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 400
+
+
+@app.route('/sign-in', methods=['POST'])
+def sign_in():
+    email = request.get_json().get('email')
+    password = request.get_json().get('password')
+
+    if not email or not password:
+        return jsonify({'error': 'Missing email or password'}), 400
+    try:
+        user = auth.get_user_by_email(email)
+        print(dir(user))
+        if user.disabled == True:
+            return jsonify({'error': 'Please contact to admin for verification'}), 400
+        return redirect('/')
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 400
 
 
 @app.route("/")
