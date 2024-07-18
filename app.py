@@ -1,27 +1,31 @@
-import re
-from flask import Flask, request, render_template, jsonify, redirect
+from flask import Flask, request, render_template, jsonify, redirect, session
 import datetime
 from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList
 from firebase_admin import auth
 from pushNotificationHandler import sendBulkNotification
-from utils import authenticate
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('application.cfg.py')
+app.secret_key = app.config['APP_SECRET_KEY']
 app.app_context().push()
 
 
 @app.route('/auth', methods=['GET', 'POST'])
 def authentication():
+    user = session.get('user')
+    if user:
+        return redirect('/')
+
     if request.method == 'GET':
-        return render_template('auth.html', title='Authentication', cid=app.config['VAPID_GOOGLE_CLIENT_ID'])
+        return render_template('auth.html', title='Authentication', cid=app.config['GOOGLE_CLIENT_ID'])
 
     id_token = request.get_json().get('idToken')
+    user = request.get_json().get('user')
+    print(user)
     if not id_token:
         return jsonify({'error': 'Missing ID token'}), 400
 
     try:
-        # Verify the ID token
         decoded_token = auth.verify_id_token(id_token)
         uid = decoded_token['uid']
         # ... (You can access other user information from decoded_token)
@@ -56,31 +60,23 @@ def sign_up():
 
 @app.route('/sign-in', methods=['POST'])
 def sign_in():
-    email = request.get_json().get('email')
-    password = request.get_json().get('password')
-
-    if not email or not password:
-        return jsonify({'error': 'Missing email or password'}), 400
-    try:
-        user = auth.get_user_by_email(email)
-        print(dir(user))
-        if user.disabled == True:
-            return jsonify({'error': 'Please contact to admin for verification'}), 400
-        return redirect('/')
-    except Exception as e:
-        print(e)
-        return jsonify({'error': str(e)}), 400
+    user = request.json
+    if not user:
+        return jsonify({'error': 'No user provided'}), 400
+    session['user'] = user
+    return jsonify({'success': 'User signed in successfully'}), 200
 
 
 @app.route("/")
-@authenticate
 def home():
+    user = session.get('user')
+    if not user:
+        return redirect('/auth')
     services = getServiceList()
     return render_template("index.html", title="Deployment Status", services=services)
 
 
 @app.route("/service-worker/subscription", methods=["POST"])
-@authenticate
 def create_push_subscription():
     json_data = request.get_json()
     status = addUserSubscriptionDevice(

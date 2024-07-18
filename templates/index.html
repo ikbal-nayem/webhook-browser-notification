@@ -1,20 +1,15 @@
-{% extends "base.html" %}
-
-{% block header_script %}
+{% extends "base.html" %} {% block header_script %}
 <script type="text/javascript" src="/static/register-service-worker.js"></script>
-{% endblock %}
-
-
-{% block content %}
-<div class="mt-10">
-	<h1 class="text-center text-primary">GEMS Deployment Status</h1>
+{% endblock %} {% block content %}
+<div class="mt-5">
+	<h3 class="text-center text-primary">GEMS Deployment Status</h3>
 
 	<div class="text-center mb-3">
 		<button id="registerButton" class="btn btn-primary">Subscribe</button>
 	</div>
 
-	<div id="service-block" class="row">
-		<form>
+	<form>
+		<div id="service-block" class="row">
 			<div class="col-md-4">
 				<div class="card">
 					<div class="card-header">
@@ -62,31 +57,29 @@
 			</div>
 		</div>
 	</form>
-</div>
-{% endblock %}
+	{% endblock %} {% block script %}
+	<script type="text/javascript">
+		if (navigator.serviceWorker) {
+			navigator.serviceWorker.getRegistrations().then((registration) => {
+				if (registration?.length > 0) {
+					console.log('Service worker is already registered:');
+					document.getElementById('registerButton').style.display = 'none';
+				} else {
+					console.log('Service worker is not registered');
+					document.getElementById('service-block').style.display = 'none';
+				}
+			});
+		}
 
-{% block script %}
-<script type="text/javascript">
-	if (navigator.serviceWorker) {
-		navigator.serviceWorker.getRegistrations().then((registration) => {
-			if (registration?.length > 0) {
-				console.log('Service worker is already registered:');
-				document.getElementById('registerButton').style.display = 'none';
-			} else {
-				console.log('Service worker is not registered');
-				document.getElementById('service-block').style.display = 'none';
-			}
+		const registerButton = document.getElementById('registerButton');
+		registerButton.addEventListener('click', () => {
+			registerServiceWorker(
+				'/static/service-worker.js',
+				"{{config['VAPID_PUBLIC_KEY']}}",
+				'/service-worker/subscription',
+				'Srabon'
+			);
 		});
-	}
-
-	const registerButton = document.getElementById('registerButton');
-	registerButton.addEventListener('click', () => {
-		registerServiceWorker(
-			'/static/service-worker.js',
-			"{{config['VAPID_PUBLIC_KEY']}}",
-			'/service-worker/subscription',
-			'Srabon'
-		);
-	});
-</script>
-{% endblock %}
+	</script>
+	{% endblock %}
+</div>
