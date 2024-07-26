@@ -60,12 +60,11 @@ function registerServiceWorker(serviceWorkerUrl, applicationServerPublicKey, api
 			if (permission === 'granted') {
 				console.log('Notification permission granted.');
 			}
-		})
+		});
 	}
-	
+
 	let swRegistration = null;
 	if ('serviceWorker' in navigator && 'PushManager' in window) {
-		console.log('Service Worker and Push is supported');
 		navigator.serviceWorker
 			.register(serviceWorkerUrl)
 			.then(function (swReg) {
@@ -77,7 +76,7 @@ function registerServiceWorker(serviceWorkerUrl, applicationServerPublicKey, api
 				console.error('Service Worker Error', error);
 			});
 	} else {
-		console.warn('Push messaging is not supported');
+		alert('Push messaging is not supported');
 	}
 	return swRegistration;
 }

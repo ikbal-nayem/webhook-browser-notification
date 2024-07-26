@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, jsonify, redirect, session
 import datetime
-from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList
+from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList, setUserSubscription
 from firebase_admin import auth
 from pushNotificationHandler import sendBulkNotification
 
@@ -47,11 +47,13 @@ def authentication():
 def sign_up():
     email = request.get_json().get('email')
     password = request.get_json().get('password')
+    name = request.get_json().get('name')
 
     if not email or not password:
         return jsonify({'error': 'Missing email or password'}), 400
     try:
-        user = auth.create_user(email=email, password=password, disabled=True)
+        user = auth.create_user(
+            email=email, password=password, display_name=name, disabled=True)
         return jsonify({'message': 'User created successfully. You will be able to login after verification process.', 'uid': user.uid}), 201
     except Exception as e:
         print(e)
@@ -73,7 +75,7 @@ def home():
     if not user:
         return redirect('/auth')
     services = getServiceList()
-    return render_template("index.html", title="Deployment Status", services=services)
+    return render_template("index.html", title="Deployment Status", user=user, services=services)
 
 
 @app.route("/service-worker/subscription", methods=["POST"])
@@ -81,7 +83,16 @@ def create_push_subscription():
     json_data = request.get_json()
     status = addUserSubscriptionDevice(
         json_data['user'], json_data['subscription_json'])
-    return jsonify(status)
+    return jsonify(status), 200
+
+
+@app.route("/substribe", methods=["POST"])
+def substribe():
+    req_json = request.get_json()
+    data = req_json.get('data')
+    user = session.get('user')
+    setUserSubscription(user, data)
+    return "Successfully saved", 200
 
 
 @app.route("/webhook", methods=["POST"])

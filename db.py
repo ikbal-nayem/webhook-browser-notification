@@ -40,6 +40,25 @@ def getAllSubscribers():
     return s_list
 
 
+def getUserSubscription(user):
+    id = user.get('email')
+    li = []
+    for s in services.list_documents():
+        service_data = s.get().to_dict()
+        for e in list(service_data.keys()):
+            if id in service_data[e]:
+                li.append(f'{e}_{s.id}')
+    return li
+
+
+def setUserSubscription(user, services_list: list):
+    current_services = getUserSubscription(user)
+    for s in services_list:
+        services.document(s.split('_')[1]).update({
+            s.split('_')[0]: firestore.ArrayUnion([user.get('email')])
+        })
+
+
 def addService(service):
     return services.document(service).set({
         'stage': [],
@@ -47,10 +66,11 @@ def addService(service):
         'production': [],
     }, merge=True)
 
+
 def getServiceList():
     return [s.id for s in services.list_documents()]
 
 
 # if __name__ == "__main__":
-#     s = getServiceList()
+#     s = getSubscription()
 #     print(s)
