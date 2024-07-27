@@ -60,13 +60,6 @@
 		document.getElementById('sign-in-form').style.display = showSignUp ? 'none' : 'block';
 	}
 
-	function showMessage(message, type) {
-		var showElement = document.getElementById('show-message');
-		showElement.innerHTML = message;
-		showElement.classList.remove('alert-success', 'alert-danger', 'd-none');
-		showElement.classList.add('alert-' + type);
-	}
-
 	async function signUp() {
 		const email = document.getElementById('sign-up-email').value;
 		const password = document.getElementById('sign-up-password').value;

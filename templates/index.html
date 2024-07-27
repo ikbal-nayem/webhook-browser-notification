@@ -2,6 +2,7 @@
 <script type="text/javascript" src="/static/register-service-worker.js"></script>
 {% endblock %} {% block content %}
 <div class="mt-5">
+	<div class="alert mt-3 d-none" id="show-message" role="alert"></div>
 	<h3 class="text-center text-primary">GEMS Deployment Status</h3>
 
 	<form id="subscription-form">
@@ -14,7 +15,8 @@
 					<div class="card-body">
 						{% for s in services %}
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" name="stage_{{s}}" id="stage_{{s}}" />
+							<input class="form-check-input" type="checkbox" {{"checked" if "stage_"+s in
+							user_subscriptions}} name="stage_{{s}}" id="stage_{{s}}" />
 							<label class="form-check-label" for="stage_{{s}}"> {{s}} </label>
 						</div>
 						{% endfor %}
@@ -29,7 +31,8 @@
 					<div class="card-body">
 						{% for s in services %}
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" name="training_{{s}}" id="training_{{s}}" />
+							<input class="form-check-input" type="checkbox" {{"checked" if "training_"+s in
+							user_subscriptions}} name="training_{{s}}" id="training_{{s}}" />
 							<label class="form-check-label" for="training_{{s}}"> {{s}} </label>
 						</div>
 						{% endfor %}
@@ -44,7 +47,8 @@
 					<div class="card-body">
 						{% for s in services %}
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" name="production_{{s}}" id="production_{{s}}" />
+							<input class="form-check-input" type="checkbox" {{"checked" if "production_"+s in
+							user_subscriptions}} name="production_{{s}}" id="production_{{s}}" />
 							<label class="form-check-label" for="production_{{s}}"> {{s}} </label>
 						</div>
 						{% endfor %}
@@ -94,8 +98,10 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ data, prev_subscriptions: us }),
 			})
+				.then((resp) => resp.json())
 				.then((resp) => {
 					console.log(resp);
+					showMessage(resp?.message, 'success');
 				})
 				.finally(() => Array.from(sForm.elements).forEach((formElement) => (formElement.disabled = false)));
 		});

@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request, render_template, jsonify, redirect, session
 import datetime
 from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList, setUserSubscription, getUserSubscription
@@ -94,7 +95,7 @@ def substribe():
     prev_subscriptions = req_json.get('prev_subscriptions')
     user = session.get('user')
     setUserSubscription(user, data, prev_subscriptions)
-    return "Successfully saved", 200
+    return jsonify({'message': "Successfully saved"}), 200
 
 
 @app.route("/webhook", methods=["POST"])
