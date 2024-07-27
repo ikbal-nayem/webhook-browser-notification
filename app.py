@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, jsonify, redirect, session
 import datetime
-from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList, setUserSubscription
+from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList, setUserSubscription, getUserSubscription
 from firebase_admin import auth
 from pushNotificationHandler import sendBulkNotification
 
@@ -75,7 +75,8 @@ def home():
     if not user:
         return redirect('/auth')
     services = getServiceList()
-    return render_template("index.html", title="Deployment Status", user=user, services=services)
+    user_subscriptions = getUserSubscription(user)
+    return render_template("index.html", title="Deployment Status", user=user, services=services, user_subscriptions=user_subscriptions)
 
 
 @app.route("/service-worker/subscription", methods=["POST"])
@@ -90,8 +91,9 @@ def create_push_subscription():
 def substribe():
     req_json = request.get_json()
     data = req_json.get('data')
+    prev_subscriptions = req_json.get('prev_subscriptions')
     user = session.get('user')
-    setUserSubscription(user, data)
+    setUserSubscription(user, data, prev_subscriptions)
     return "Successfully saved", 200
 
 

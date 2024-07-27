@@ -51,15 +51,14 @@ def getUserSubscription(user):
     return li
 
 
-def setUserSubscription(user, services_list: list):
-    current_services = getUserSubscription(user)
-    for cs in current_services:
+def setUserSubscription(user, services_list: list, prev_subscriptions: list):
+    for cs in prev_subscriptions:
         if cs not in services_list:
             services.document(cs.split('_')[1]).update({
                 cs.split('_')[0]: firestore.ArrayRemove([user.get('email')])
             })
     for s in services_list:
-        if s not in current_services:
+        if s not in prev_subscriptions:
             services.document(s.split('_')[1]).update({
                 s.split('_')[0]: firestore.ArrayUnion([user.get('email')])
             })

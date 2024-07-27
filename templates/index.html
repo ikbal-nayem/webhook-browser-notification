@@ -59,43 +59,45 @@
 	</form>
 	{% endblock %} {% block script %}
 	<script type="text/javascript">
-		let hasServiceWorker = false;
+		// let hasServiceWorker = false;
 		if (navigator.serviceWorker) {
 			navigator.serviceWorker.getRegistrations().then((registration) => {
 				if (registration?.length > 0) {
 					console.log('Service worker is Ready');
-					hasServiceWorker = true;
+					// hasServiceWorker = true;
 				} else {
 					console.log('Service worker is not registered');
+					registerServiceWorker(
+						'/static/service-worker.js',
+						"{{config['VAPID_PUBLIC_KEY']}}",
+						'/service-worker/subscription',
+						'{{user.email}}'
+					);
 				}
 			});
 		}
+		const us = JSON.parse('{{user_subscriptions|tojson}}');
 
-		document.getElementById('subscription-form').addEventListener('submit', async (e) => {
+		const sForm = document.getElementById('subscription-form');
+		sForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			e.stopPropagation();
+			Array.from(sForm.elements).forEach((formElement) => (formElement.disabled = true));
 			const elements = Array.from(e.currentTarget);
 			const data = elements.reduce((acc, el) => {
 				el.checked && acc.push(el.name);
 				return acc;
 			}, []);
 
-			// if (!hasServiceWorker) {
-			// 	registerServiceWorker(
-			// 		'/static/service-worker.js',
-			// 		"{{config['VAPID_PUBLIC_KEY']}}",
-			// 		'/service-worker/subscription',
-			// 		'{{user.email}}'
-			// 	);
-			// 	return;
-			// }
 			fetch('/substribe', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ data }),
-			}).then(resp => {
-				console.log(resp);
+				body: JSON.stringify({ data, prev_subscriptions: us }),
 			})
+				.then((resp) => {
+					console.log(resp);
+				})
+				.finally(() => Array.from(sForm.elements).forEach((formElement) => (formElement.disabled = false)));
 		});
 	</script>
 	{% endblock %}
