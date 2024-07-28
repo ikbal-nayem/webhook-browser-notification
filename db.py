@@ -28,7 +28,7 @@ def addUserSubscriptionDevice(user, subscription_str):
                 return {'status': 'success', 'message': 'Already Subscribed'}
     users.document(user).collection('devices').add({**subscription_json})
     sendSingleNotification(subscription_json, {
-        'title': 'Successfully Saved', 'body': 'You Have Successfully Subscribed to the Service', 'tag': 'add-subscriber'})
+        'title': 'Successfully Saved', 'body': 'Notification service is ready to use. Please select services below to get notifications.', 'tag': 'add-subscriber'})
     return {'status': 'success', 'message': 'Successfully Saved'}
 
 
@@ -38,6 +38,12 @@ def getAllSubscribers():
         for d in s:
             s_list.append(d.to_dict())
     return s_list
+
+
+def getServiceBasedSubscribers(service, env):
+    subscribers = services.document(service).get().to_dict().get(env)
+    print(subscribers)
+    return subscribers
 
 
 def getUserSubscription(user):

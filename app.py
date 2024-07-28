@@ -1,7 +1,7 @@
 import json
 from flask import Flask, request, render_template, jsonify, redirect, session
 import datetime
-from db import addUserSubscriptionDevice, getAllSubscribers, addService, getServiceList, setUserSubscription, getUserSubscription
+from db import addUserSubscriptionDevice, getServiceBasedSubscribers, getAllSubscribers, addService, getServiceList, setUserSubscription, getUserSubscription
 from firebase_admin import auth
 from pushNotificationHandler import sendBulkNotification
 
@@ -22,7 +22,6 @@ def authentication():
 
     id_token = request.get_json().get('idToken')
     user = request.get_json().get('user')
-    print(user)
     if not id_token:
         return jsonify({'error': 'Missing ID token'}), 400
 

@@ -15,9 +15,7 @@ function urlB64ToUint8Array(base64String) {
 function updateSubscriptionOnServer(subscription, apiEndpoint, user) {
 	return fetch(apiEndpoint, {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
+		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({
 			subscription_json: JSON.stringify(subscription),
 			user: user,
@@ -55,22 +53,13 @@ function subscribeUser(swRegistration, applicationServerPublicKey, apiEndpoint, 
 }
 
 function registerServiceWorker(serviceWorkerUrl, applicationServerPublicKey, apiEndpoint, user) {
-	if (!('Notification' in window) || Notification.permission === 'denied') {
-		Notification.requestPermission().then(function (permission) {
-			if (permission === 'granted') {
-				console.log('Notification permission granted.');
-			}
-		});
-	}
-
 	let swRegistration = null;
 	if ('serviceWorker' in navigator && 'PushManager' in window) {
 		navigator.serviceWorker
 			.register(serviceWorkerUrl)
 			.then(function (swReg) {
-				console.log('Service Worker is registered', swReg);
-				subscribeUser(swReg, applicationServerPublicKey, apiEndpoint, user);
 				swRegistration = swReg;
+				setTimeout(() => subscribeUser(swReg, applicationServerPublicKey, apiEndpoint, user));
 			})
 			.catch(function (error) {
 				console.error('Service Worker Error', error);

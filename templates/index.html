@@ -63,12 +63,22 @@
 	</form>
 	{% endblock %} {% block script %}
 	<script type="text/javascript">
-		// let hasServiceWorker = false;
+		if (!('Notification' in window) || Notification.permission === 'denied') {
+			Notification.requestPermission().then(function (permission) {
+				if (permission === 'granted') {
+					registerServiceWorker(
+						'/static/service-worker.js',
+						"{{config['VAPID_PUBLIC_KEY']}}",
+						'/service-worker/subscription',
+						'{{user.email}}'
+					);
+				}
+			});
+		}
 		if (navigator.serviceWorker) {
 			navigator.serviceWorker.getRegistrations().then((registration) => {
 				if (registration?.length > 0) {
 					console.log('Service worker is Ready');
-					// hasServiceWorker = true;
 				} else {
 					console.log('Service worker is not registered');
 					registerServiceWorker(
@@ -80,8 +90,9 @@
 				}
 			});
 		}
+	</script>
+	<script type="text/javascript">
 		const us = JSON.parse('{{user_subscriptions|tojson}}');
-
 		const sForm = document.getElementById('subscription-form');
 		sForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
