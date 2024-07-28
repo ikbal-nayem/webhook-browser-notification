@@ -101,13 +101,12 @@ def substribe():
 def receive_webhook():
     data = request.get_json()
     print(f"Received webhook data: {data}")
-    addService(data['service'])
-    sendBulkNotification(getAllSubscribers(), {
-                         'title': f"{data['service']} ({data['env']})", 'body': data['status']})
+    addService(data.get('service'))
+    substribers = getServiceBasedSubscribers(data.get('service'), data.get('env'))
+    notification = {'title': f"{data.get('service')} ({data.get('env')})", 'body': data.get('status')}
+    sendBulkNotification(substribers, notification)
     return "Webhook received successfully!", 200
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-# Current service worker https://fkh9sv-5000.csb.app/

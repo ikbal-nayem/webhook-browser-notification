@@ -82,18 +82,18 @@
 		} else showMessage('Please enter both name, email and password.', 'danger');
 	}
 
-	async function handleCredentialResponse(g_resp) {
-		// Handle the credential response for Google Sign-In
-		console.log('Encoded JWT ID token: ' + g_resp.credential);
-		const response = await fetch('/auth', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ idToken: g_resp.credential }),
-		});
-		const data = await response.json();
-		data.error && showMessage(data.error, 'danger');
-	}
+	// async function handleCredentialResponse(g_resp) {
+	// 	// Handle the credential response for Google Sign-In
+	// 	console.log('Encoded JWT ID token: ' + g_resp.credential);
+	// 	const response = await fetch('/auth', {
+	// 		method: 'POST',
+	// 		headers: {
+	// 			'Content-Type': 'application/json',
+	// 		},
+	// 		body: JSON.stringify({ idToken: g_resp.credential }),
+	// 	});
+	// 	const data = await response.json();
+	// 	data.error && showMessage(data.error, 'danger');
+	// }
 </script>
 {% endblock %}

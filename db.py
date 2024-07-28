@@ -11,22 +11,26 @@ users = db.collection("users")
 services = db.collection("services")
 
 
-def getUserSubscriptionDevices(user) -> list | None:
-    devices = users.document(user).collection('devices').get()
-    return [d.to_dict() for d in devices] if devices else None
+def getUserDevices(user) -> list | None:
+    return users.document(user).get().to_dict().get('devices')
 
 
 def addUserSubscriptionDevice(user, subscription_str):
     subscription_json = json.loads(subscription_str) if type(
         subscription_str) is str else subscription_str
-    ud = getUserSubscriptionDevices(user)
+    ud = getUserDevices(user)
     if ud and len(ud) > 0:
         for d in ud:
             if d['endpoint'] == subscription_json['endpoint']:
                 sendSingleNotification(subscription_json, {
                     'title': 'Already Subscribed', 'body': 'You Are Already Subscribed to the Service', 'tag': 'add-subscriber'})
                 return {'status': 'success', 'message': 'Already Subscribed'}
-    users.document(user).collection('devices').add({**subscription_json})
+
+    if ud and len(ud) > 0:
+        users.document(user).update(
+            {'devices': firestore.ArrayUnion([subscription_json])})
+    else:
+        users.document(user).set({'devices': [subscription_json]}, merge=True)
     sendSingleNotification(subscription_json, {
         'title': 'Successfully Saved', 'body': 'Notification service is ready to use. Please select services below to get notifications.', 'tag': 'add-subscriber'})
     return {'status': 'success', 'message': 'Successfully Saved'}
@@ -34,16 +38,17 @@ def addUserSubscriptionDevice(user, subscription_str):
 
 def getAllSubscribers():
     s_list = []
-    for s in [u.collection('devices').get() for u in users.list_documents()]:
-        for d in s:
-            s_list.append(d.to_dict())
+    for u in users.list_documents():
+        s_list.extend(u.get().to_dict().get('devices'))
     return s_list
 
 
 def getServiceBasedSubscribers(service, env):
-    subscribers = services.document(service).get().to_dict().get(env)
-    print(subscribers)
-    return subscribers
+    subscribed_users = services.document(service).get().to_dict().get(env)
+    devices = []
+    for user in subscribed_users:
+        devices.extend(users.document(user).get().to_dict().get('devices'))
+    return devices
 
 
 def getUserSubscription(user):
