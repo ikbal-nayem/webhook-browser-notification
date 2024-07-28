@@ -24,7 +24,7 @@ self.addEventListener("push", function (event) {
   }
   const options = {
     body: body,
-    tag: data?.tag || "gems-developers",
+    tag: data?.tag,
     icon: "https://gems.gov.bd/media/logos/default-large.png",
     vibrate: [200, 100, 200],
   };

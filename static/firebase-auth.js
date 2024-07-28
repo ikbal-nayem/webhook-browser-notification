@@ -24,11 +24,12 @@ function showMessage(message, type) {
 	showElement.classList.add('alert-' + type);
 }
 
-document.getElementById('sign-in-button').addEventListener('click', async () => {
+document.getElementById('sign-in-button').addEventListener('click', async (e) => {
 	const email = document.getElementById('sign-in-email').value;
 	const password = document.getElementById('sign-in-password').value;
 
 	if (email && password) {
+		e.currentTarget.setAttribute('disabled', true);
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			const user = userCredential?.user;
@@ -44,6 +45,8 @@ document.getElementById('sign-in-button').addEventListener('click', async () => 
 			}
 		} catch (err) {
 			showMessage(err?.message, 'danger');
+		} finally {
+			e.currentTarget.removeAttribute('disabled');
 		}
 	} else showMessage('Please enter both email and password.', 'danger');
 });

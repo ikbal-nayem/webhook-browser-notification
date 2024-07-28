@@ -66,6 +66,7 @@
 		const name = document.getElementById('sign-up-name').value;
 
 		if (email && password && name) {
+			document.getElementById('sign-up-button').setAttribute('disabled', 'true');
 			const response = await fetch('/sign-up', {
 				method: 'POST',
 				headers: {
@@ -79,6 +80,7 @@
 				toggleForms(false);
 			}
 			!!data.error && showMessage(data.error, 'danger');
+			document.getElementById('sign-up-button').removeAttribute('disabled');
 		} else showMessage('Please enter both name, email and password.', 'danger');
 	}
 
