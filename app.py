@@ -1,7 +1,7 @@
 import json
 from flask import Flask, request, render_template, jsonify, redirect, session
 import datetime
-from db import addUserSubscriptionDevice, getServiceBasedSubscribers, getAllSubscribers, addService, getServiceList, setUserSubscription, getUserSubscription
+from db import addUserSubscriptionDevice, getServiceBasedSubscribers, getUserDevices, addService, getServiceList, setUserSubscription, getUserSubscription
 from firebase_admin import auth
 from pushNotificationHandler import sendBulkNotification
 
@@ -102,8 +102,10 @@ def receive_webhook():
     data = request.get_json()
     print(f"Received webhook data: {data}")
     addService(data.get('service'))
-    substribers = getServiceBasedSubscribers(data.get('service'), data.get('env'))
-    notification = {'title': f"{data.get('service')} ({data.get('env')})", 'body': data.get('status')}
+    substribers = getServiceBasedSubscribers(
+        data.get('service'), data.get('env'))
+    notification = {
+        'title': f"{data.get('service')} ({data.get('env')})", 'body': data.get('status')}
     sendBulkNotification(substribers, notification)
     return "Webhook received successfully!", 200
 

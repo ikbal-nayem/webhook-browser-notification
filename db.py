@@ -11,8 +11,9 @@ users = db.collection("users")
 services = db.collection("services")
 
 
-def getUserDevices(user) -> list | None:
-    return users.document(user).get().to_dict().get('devices')
+def getUserDevices(user) -> list:
+    d = users.document(user).get().to_dict()
+    return d.get('devices') if d else []
 
 
 def addUserSubscriptionDevice(user, subscription_str):
@@ -39,15 +40,18 @@ def addUserSubscriptionDevice(user, subscription_str):
 def getAllSubscribers():
     s_list = []
     for u in users.list_documents():
-        s_list.extend(u.get().to_dict().get('devices'))
+        device = u.get().to_dict()
+        s_list.extend(device.get('devices') if device else [])
     return s_list
 
 
 def getServiceBasedSubscribers(service, env):
-    subscribed_users = services.document(service).get().to_dict().get(env)
+    subscribed_users = services.document(service).get().to_dict()
+    if not subscribed_users:
+        return []
     devices = []
-    for user in subscribed_users:
-        devices.extend(users.document(user).get().to_dict().get('devices'))
+    for user in subscribed_users.get(env):
+        devices.extend(getUserDevices(user))
     return devices
 
 
@@ -85,8 +89,3 @@ def addService(service):
 
 def getServiceList():
     return [s.id for s in services.list_documents()]
-
-
-# if __name__ == "__main__":
-#     s = getSubscription()
-#     print(s)
