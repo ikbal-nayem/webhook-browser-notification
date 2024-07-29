@@ -79,8 +79,8 @@
 				showMessage(data.message, 'success');
 				toggleForms(false);
 			}
-			!!data.error && showMessage(data.error, 'danger');
 			document.getElementById('sign-up-button')?.removeAttribute('disabled');
+			!!data.error && showMessage(data.error, 'danger');
 		} else showMessage('Please enter both name, email and password.', 'danger');
 	}
 
