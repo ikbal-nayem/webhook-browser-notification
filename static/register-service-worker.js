@@ -25,6 +25,7 @@ function updateSubscriptionOnServer(subscription, apiEndpoint, user) {
 
 function subscribeUser(swRegistration, applicationServerPublicKey, apiEndpoint, user) {
 	const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+	console.log(swRegistration);
 	swRegistration.pushManager
 		.subscribe({
 			userVisibleOnly: true,
@@ -59,7 +60,7 @@ function registerServiceWorker(serviceWorkerUrl, applicationServerPublicKey, api
 			.register(serviceWorkerUrl)
 			.then(function (swReg) {
 				swRegistration = swReg;
-				setTimeout(() => subscribeUser(swReg, applicationServerPublicKey, apiEndpoint, user), 2000);
+				setTimeout(() => subscribeUser(swRegistration, applicationServerPublicKey, apiEndpoint, user), 2000);
 			})
 			.catch(function (error) {
 				console.error('Service Worker Error', error);
