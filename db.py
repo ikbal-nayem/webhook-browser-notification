@@ -3,7 +3,7 @@ import firebase_admin
 from firebase_admin import firestore, credentials
 from pushNotificationHandler import sendSingleNotification
 
-cred = credentials.Certificate("instance/firebase.json")
+cred = credentials.Certificate("./instance/firebase.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
