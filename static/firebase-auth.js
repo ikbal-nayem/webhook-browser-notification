@@ -29,7 +29,7 @@ document.getElementById('sign-in-button').addEventListener('click', async (e) =>
 	const password = document.getElementById('sign-in-password').value;
 
 	if (email && password) {
-		e.currentTarget.setAttribute('disabled', true);
+		e.currentTarget?.setAttribute('disabled', true);
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			const user = userCredential?.user;
@@ -46,7 +46,7 @@ document.getElementById('sign-in-button').addEventListener('click', async (e) =>
 		} catch (err) {
 			showMessage(err?.message, 'danger');
 		} finally {
-			e.currentTarget.removeAttribute('disabled');
+			e.currentTarget?.removeAttribute('disabled');
 		}
 	} else showMessage('Please enter both email and password.', 'danger');
 });
