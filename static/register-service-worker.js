@@ -59,7 +59,7 @@ function registerServiceWorker(serviceWorkerUrl, applicationServerPublicKey, api
 			.register(serviceWorkerUrl)
 			.then(function (swReg) {
 				swRegistration = swReg;
-				setTimeout(() => subscribeUser(swReg, applicationServerPublicKey, apiEndpoint, user));
+				setTimeout(() => subscribeUser(swReg, applicationServerPublicKey, apiEndpoint, user), 2000);
 			})
 			.catch(function (error) {
 				console.error('Service Worker Error', error);
