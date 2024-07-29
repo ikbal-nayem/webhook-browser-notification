@@ -25,7 +25,6 @@ function updateSubscriptionOnServer(subscription, apiEndpoint, user) {
 
 function subscribeUser(swRegistration, applicationServerPublicKey, apiEndpoint, user) {
 	const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-	console.log(swRegistration);
 	swRegistration.pushManager
 		.subscribe({
 			userVisibleOnly: true,
