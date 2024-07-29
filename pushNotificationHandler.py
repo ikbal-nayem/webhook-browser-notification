@@ -2,6 +2,8 @@ from pywebpush import webpush, WebPushException
 import json
 from flask import current_app
 
+from utils import log
+
 
 def triggerNotification(subscription_json, title, body, tag=None):
     try:
@@ -27,7 +29,7 @@ def triggerNotification(subscription_json, title, body, tag=None):
 
 
 def sendBulkNotification(subscriptions, options: dict):
-    print(f'Sending Notification to {len(subscriptions)} subscribers')
+    log(f'Sending Notification to {len(subscriptions)} devices.')
     for subscription in subscriptions:
         triggerNotification(subscription, options.get('title'), options.get('body'), options.get('tag'))
 

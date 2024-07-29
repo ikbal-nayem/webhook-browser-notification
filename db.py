@@ -2,6 +2,8 @@ import json
 import firebase_admin
 from firebase_admin import firestore, credentials
 from pushNotificationHandler import sendSingleNotification
+from utils import log
+
 
 cred = credentials.Certificate("./instance/firebase.json")
 firebase_admin.initialize_app(cred)
@@ -46,12 +48,14 @@ def getAllSubscribers():
 
 
 def getServiceBasedSubscribers(service, env):
-    subscribed_users = services.document(service).get().to_dict()
+    subscribed_users = services.document(service).get().to_dict().get(env)
+    log(f'{len(subscribed_users)} users found.')
     if not subscribed_users:
         return []
     devices = []
-    for user in subscribed_users.get(env):
+    for user in subscribed_users:
         devices.extend(getUserDevices(user))
+    log(f'{len(devices)} subscribed devices found.')
     return devices
 
 
@@ -79,13 +83,17 @@ def setUserSubscription(user, services_list: list, prev_subscriptions: list):
             })
 
 
-def addService(service):
+def getServiceList():
+    return [s.id for s in services.list_documents()]
+
+
+def addService(service) -> None:
+    s_list = getServiceList()
+    if service in s_list:
+        return
+    log(f'New service found {service}')
     return services.document(service).set({
         'stage': [],
         'training': [],
         'production': [],
     }, merge=True)
-
-
-def getServiceList():
-    return [s.id for s in services.list_documents()]
