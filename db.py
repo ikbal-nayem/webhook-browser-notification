@@ -49,13 +49,12 @@ def getAllSubscribers():
 
 def getServiceBasedSubscribers(service, env):
     subscribed_users = services.document(service).get().to_dict().get(env)
-    log(f'{len(subscribed_users)} users found.')
     if not subscribed_users:
         return []
     devices = []
     for user in subscribed_users:
         devices.extend(getUserDevices(user))
-    log(f'{len(devices)} subscribed devices found.')
+    log(f'{len(subscribed_users)} users found.')
     return devices
 
 
