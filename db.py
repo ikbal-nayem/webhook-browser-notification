@@ -54,7 +54,7 @@ def getServiceBasedSubscribers(service, env):
     devices = []
     for user in subscribed_users:
         devices.extend(getUserDevices(user))
-    log(f'{len(subscribed_users)} users found.')
+    log(f'{len(devices)} users found.')
     return devices
 
 
