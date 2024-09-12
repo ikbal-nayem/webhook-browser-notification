@@ -94,5 +94,5 @@ def addService(service) -> None:
     return services.document(service).set({
         'stage': [],
         'training': [],
-        'production': [],
+        'prod': [],
     }, merge=True)
