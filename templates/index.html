@@ -47,9 +47,9 @@
 					<div class="card-body">
 						{% for s in services %}
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" {{"checked" if "production_"+s in
-							user_subscriptions}} name="production_{{s}}" id="production_{{s}}" />
-							<label class="form-check-label" for="production_{{s}}"> {{s}} </label>
+							<input class="form-check-input" type="checkbox" {{"checked" if "prod_"+s in
+							user_subscriptions}} name="prod_{{s}}" id="prod_{{s}}" />
+							<label class="form-check-label" for="prod_{{s}}"> {{s}} </label>
 						</div>
 						{% endfor %}
 					</div>
